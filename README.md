@@ -4,7 +4,7 @@
 ### win10 GPU
 * [cuda](https://developer.nvidia.com/cuda-downloads) 
 * [cudnn](https://developer.nvidia.com/cudnn)
-* [这篇教程大部分都对](https://blog.csdn.net/qq_37296487/article/details/83028394)
+* [可以参照这个教程安装](https://blog.csdn.net/qq_37296487/article/details/83028394)
 * 离线安装包地址   59.77.7.59:/home/ps/zzy/
 
 ### pytorch
