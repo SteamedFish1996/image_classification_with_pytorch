@@ -1,4 +1,4 @@
-# Pytorch Image Classification
+# PyTorch Image Classification
 
 ## Installation
 ### win10 GPU
