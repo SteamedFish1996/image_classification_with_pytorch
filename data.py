@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 import os, random, shutil
 
 def my_mkdir(path):
@@ -11,10 +11,7 @@ def create_dir(tar_dir,labels):
         my_mkdir(path)
         path = os.path.join(tar_dir,i)
         my_mkdir(path)
-root_dir = r'./image/site1/sample'
-train_dir = './data/train'
-test_dir = './data/test'
-rate=0.1    #自定义抽取图片的比例，比方说100张抽10张，那就是0.1
+
 def prepare_dataset(root_dir, train_dir, test_dir, rate):
     if os.path.exists(train_dir):
         shutil.rmtree(train_dir) 
@@ -42,5 +39,8 @@ def prepare_dataset(root_dir, train_dir, test_dir, rate):
 
 
 if __name__ == '__main__':
-	
-	tarDir = './result/'    #移动到新的文件夹路径
+    root_dir = r'./image/site1/sample'
+    train_dir = './data/train/'
+    test_dir = './data/test/'
+    rate=0.1   #自定义抽取图片的比例，比方说100张抽10张，那就是0.1
+    prepare_dataset(root_dir, train_dir, test_dir, rate)

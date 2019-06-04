@@ -1,20 +1,50 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jun  3 15:57:51 2019
+
+@author: zzy
+"""
 import torch
 import torch.nn as nn
-import torchvision
-from torch.utils.data import DataLoader, Dataset
-from torchvision.transforms import transforms
-from torch.utils.data import DataLoader
+import torch.nn.functional as F
+import torch.utils.data as Data
+import torchvision.datasets as dset
+from torchvision import transforms
 
+import matplotlib.pyplot as plt
 
-import os
-from skimage import io
-
-
- 
-# Hyper Parameters
+torch.manual_seed(1) #reproducible
 EPOCH = 1               # train the training data n times, to save time, we just train 1 epoch
 BATCH_SIZE = 50
 LR = 0.001              # learning rate
+
+train_transformations = transforms.Compose([
+        #transforms.RandomHorizontalFlip(),
+        #transforms.RandomCrop(32,padding=4),
+        transforms.ToTensor(),
+        #transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
+    ])
+
+data_dir = '.\image\site1\sample'
+dataset = dset.ImageFolder(root=train_data_dir,transform=train_transformations)
+
+print(dataset.class_to_idx)
+print(dataset.__len__)
+print(dataset[1000][0].size())
+print(dataset[900][1])  # 得到的是类别4，即'FALSE'
+print(dataset.classes[dataset[900][1]])
+"""# plot one example
+plt.subplot(1, 2, 1)
+img = transforms.ToPILImage()(dataset[0][0])
+plt.imshow(img)
+plt.title('Class:'+dataset.classes[0])
+plt.subplot(1, 2, 2)
+img2 = transforms.ToPILImage()(dataset[201][0])
+plt.imshow(img2)
+plt.title('Class:'+dataset.classes[1])
+plt.show()"""
+
+train_loader = Data.DataLoader(dataset=dataset, batch_size=BATCH_SIZE, shuffle=True)
 
 
 class CNN(nn.Module):
@@ -32,68 +62,13 @@ class CNN(nn.Module):
         output = self.out(x)
         return output
 
-def main():
-    train_data_dir = '.\image\site1\sample'
-    site1_set = Site1Dataset(train_data_dir)
-    print(site1_set.lenth)
-    #数据预处理 定义训练集的转换，随机翻转图像，剪裁图像，应用平均和标准正常化方法
-    train_transformations = transforms.Compose([
-        #transforms.RandomHorizontalFlip(),
-        #transforms.RandomCrop(32,padding=4),
-        transforms.ToTensor(),
-        #transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
-    ])
 
-    site1_set = Site1Dataset(train_data_dir)
+cnn = CNN()
+if torch.cuda.is_available():   # Moves all model parameters and buffers to the GPU.
+    cnn.cuda()
+optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)   # optimize all cnn parameters
+loss_func = nn.CrossEntropyLoss()                       # the target label is not one-hotted
 
-    #train_data=Site1Dataset(dir = train_data_dir , transform=transforms.ToTensor())
-
-    # Data Loader for easy mini-batch return in training, the image batch shape will be (50, 1, 28, 28)
-    #train_loader = DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True)
-
-    cnn = CNN()
-    if torch.cuda.is_available():
-        cnn.cuda()      # Moves all model parameters and buffers to the GPU.
-    optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)
-    loss_func = nn.CrossEntropyLoss()
-    import time
-    start_time = time.time()    #代码计时开始
-    for epoch in range(EPOCH):
-        for step, (x, y) in enumerate(train_loader):
-
-            # !!!!!!!! Change in here !!!!!!!!! #
-            b_x = x.cuda()    # Tensor on GPU
-            b_y = y.cuda()    # Tensor on GPU
-
-            output = cnn(b_x)
-            loss = loss_func(output, b_y)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-            if step % 50 == 0:
-                test_output = cnn(test_x)
-
-                # !!!!!!!! Change in here !!!!!!!!! #
-                pred_y = torch.max(test_output, 1)[1].cuda().data  # move the computation in GPU
-
-                accuracy = torch.sum(pred_y == test_y).type(torch.FloatTensor) / test_y.size(0)
-                print('Epoch: ', epoch, '| train loss: %.4f' % loss.data.cpu().numpy(), '| test accuracy: %.2f' % accuracy)
-    # 储存网络 
-    torch.save(net1, '/pkls/cnn1.pkl')  # save entire net
-
-"""
-train_data_dir = '.\image\site1\sample'
-site1_set = Site1Dataset(train_data_dir)
-print(site1_set.lenth)
-sample = site1_set.__getitem__(900)
-print(sample['label'])
-#io.imshow(sample['image'])
-plt.figure()
-# 使用灰度方式显示图片
-plt.imshow(sample['image'])
-plt.show()
-"""
 
 
 if __name__=="__main__":
