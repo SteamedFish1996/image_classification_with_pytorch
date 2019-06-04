@@ -1,51 +1,20 @@
 import torch
 import torch.nn as nn
-import torch.utils.data as Data
 import torchvision
-import matplotlib.pyplot as plt
+from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import transforms
 from torch.utils.data import DataLoader
 
-train_data_dir = '/image/site1/sample'
 
+import os
+from skimage import io
+
+
+ 
 # Hyper Parameters
 EPOCH = 1               # train the training data n times, to save time, we just train 1 epoch
 BATCH_SIZE = 50
 LR = 0.001              # learning rate
-"""
-# 数据的加载
-class Site1Dataset(data.Dataset):#需要继承data.Dataset
-    classes = ['01', '02', '05', '07', 'FALSE','Other']
-    def __init__(self):
-        # TODO
-        # 1. Initialize file path or list of file names.
-        pass
-    def __getitem__(self, index):
-        # TODO
-        # 1. Read one data from file (e.g. using numpy.fromfile, PIL.Image.open).
-        # 2. Preprocess the data (e.g. torchvision.Transform).
-        # 3. Return a data pair (e.g. image and label).
-        #这里需要注意的是，第一步：read one data，是一个data
-        pass
-    def __len__(self):
-        # You should change 0 to the total size of your dataset.
-        return 0
-
-"""
-
-#数据预处理 定义训练集的转换，随机翻转图像，剪裁图像，应用平均和标准正常化方法
-train_transformations = transforms.Compose([
-    #transforms.RandomHorizontalFlip(),
-    #transforms.RandomCrop(32,padding=4),
-    transforms.ToTensor(),
-    #transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
-])
-
-
-train_data=Site1Dataset(dir = train_data_dir , transform=transforms.ToTensor())
-
-# Data Loader for easy mini-batch return in training, the image batch shape will be (50, 1, 28, 28)
-train_loader = Data.DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True)
 
 
 class CNN(nn.Module):
@@ -64,6 +33,24 @@ class CNN(nn.Module):
         return output
 
 def main():
+    train_data_dir = '.\image\site1\sample'
+    site1_set = Site1Dataset(train_data_dir)
+    print(site1_set.lenth)
+    #数据预处理 定义训练集的转换，随机翻转图像，剪裁图像，应用平均和标准正常化方法
+    train_transformations = transforms.Compose([
+        #transforms.RandomHorizontalFlip(),
+        #transforms.RandomCrop(32,padding=4),
+        transforms.ToTensor(),
+        #transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
+    ])
+
+    site1_set = Site1Dataset(train_data_dir)
+
+    #train_data=Site1Dataset(dir = train_data_dir , transform=transforms.ToTensor())
+
+    # Data Loader for easy mini-batch return in training, the image batch shape will be (50, 1, 28, 28)
+    #train_loader = DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True)
+
     cnn = CNN()
     if torch.cuda.is_available():
         cnn.cuda()      # Moves all model parameters and buffers to the GPU.
@@ -95,8 +82,22 @@ def main():
     # 储存网络 
     torch.save(net1, '/pkls/cnn1.pkl')  # save entire net
 
+"""
+train_data_dir = '.\image\site1\sample'
+site1_set = Site1Dataset(train_data_dir)
+print(site1_set.lenth)
+sample = site1_set.__getitem__(900)
+print(sample['label'])
+#io.imshow(sample['image'])
+plt.figure()
+# 使用灰度方式显示图片
+plt.imshow(sample['image'])
+plt.show()
+"""
+
+
 if __name__=="__main__":
     import time
     start_time = time.time() 
-    main()
+    #main()
     print('total time cost: %.2f' % (time.time() - start_time), 'seconds')     

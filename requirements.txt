@@ -2,3 +2,4 @@ munch
 tqdm
 scipy
 matplotlib
+scikit-image
