@@ -1,16 +1,25 @@
 # -*- coding: utf-8 -*-
 import os, random, shutil
+import matplotlib.pyplot as plt
+
+def show_img(dataset):
+    pass
+
+
+
 
 def my_mkdir(path):
     if not os.path.exists(path):
         os.makedirs(path)
-        
+
+
 def create_dir(tar_dir,labels):
     for i in labels:
         path = os.path.join(tar_dir,i)
         my_mkdir(path)
         path = os.path.join(tar_dir,i)
         my_mkdir(path)
+
 
 def prepare_dataset(root_dir, train_dir, test_dir, rate):
     if os.path.exists(train_dir):
