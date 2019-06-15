@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import os, random, shutil
-import matplotlib.pyplot as plt
 
 def show_img(dataset):
     pass
-
-
 
 
 def my_mkdir(path):
@@ -13,7 +10,7 @@ def my_mkdir(path):
         os.makedirs(path)
 
 
-def create_dir(tar_dir,labels):
+def create_label_dir(tar_dir,labels):
     for i in labels:
         path = os.path.join(tar_dir,i)
         my_mkdir(path)
@@ -33,8 +30,8 @@ def prepare_dataset(root_dir, train_dir, test_dir, rate):
         if os.path.isdir(os.path.join(root_dir,i)):
             labels.append(i)
     #创建数据存放目录
-    create_dir(train_dir,labels)
-    create_dir(test_dir,labels)
+    create_label_dir(train_dir,labels)
+    create_label_dir(test_dir,labels)
     for label in labels:
         data_dir = os.path.join(root_dir,label)
         images = os.listdir(data_dir)
@@ -53,3 +50,4 @@ if __name__ == '__main__':
     test_dir = './data/test/'
     rate=0.1   #自定义抽取图片的比例，比方说100张抽10张，那就是0.1
     prepare_dataset(root_dir, train_dir, test_dir, rate)
+    print('finish')
